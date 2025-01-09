@@ -17,6 +17,9 @@ import javax.sql.DataSource;
 @Configuration
 public class SecurityConfiguration {
 
+    @Autowired
+    private final CustomUserDetailsService userDetailsService;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
@@ -38,12 +41,13 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    public SecurityConfiguration(CustomUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     @Bean
-    public UserDetailsManager userDetailsService(DataSource dataSource) {
-        JdbcUserDetailsManager userDetailsService = new JdbcUserDetailsManager(dataSource);
-        userDetailsService.setUsersByUsernameQuery("SELECT username, password, enabled FROM users WHERE username = ?");
-        userDetailsService.setAuthoritiesByUsernameQuery("SELECT username, authority FROM authorities WHERE username = ?");
-        return userDetailsService;
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 
 }
