@@ -17,9 +17,6 @@ import javax.sql.DataSource;
 @Configuration
 public class SecurityConfiguration {
 
-    @Autowired
-    private final CustomUserDetailsService userDetailsService;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
@@ -28,21 +25,17 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF (if not needed)
+                .csrf(csrf -> csrf.disable()) // Disable CSRF if not needed
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin").hasRole("ADMIN") // Only ADMIN role can access /admin/**
-                        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")   // Only USER role can access /user/**
-                        .requestMatchers("/**").permitAll()     // Everyone can access /public/**
-                        .anyRequest().authenticated()                  // All other requests require authentication
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .formLogin(form -> form.defaultSuccessUrl("/", true)) // Form-based login with default success URL
-                .httpBasic(basic -> {}); // Enable HTTP Basic authentication
+                .formLogin(form -> form.defaultSuccessUrl("/", true))
+                .httpBasic(basic -> {});
 
         return http.build();
-    }
-
-    public SecurityConfiguration(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
     }
 
     @Bean

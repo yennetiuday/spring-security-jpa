@@ -2,8 +2,10 @@ package com.uday.spring_security_jpa.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table (name = "users")
 public class User {
 
     @Id
@@ -11,7 +13,6 @@ public class User {
     private String password;
     private boolean enabled;
 
-    // Getters and Setters
     public String getUsername() {
         return username;
     }
